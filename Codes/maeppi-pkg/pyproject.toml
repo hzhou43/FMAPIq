@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel", "cffi>=1.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "maeppi"
+authors = [{name = "Your Name", email = "your.email@example.com"}]
+readme = "README.md"
+version = "0.1.0"
+description = "MAEppi"
+keywords = ["protein", "biophysics"]
+requires-python = ">=3.7"
+dependencies = [
+    "cffi>=1.0.0",
+]
+
+[project.scripts]
+maeppi_ern = "maeppi.tools.maeppi_ern:main"
+maeppi_sim = "maeppi.tools.maeppi_sim:main"
+maeppi_shm_server = "maeppi.tools.maeppi_shm_server:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["maeppi*"]
+
+[tool.setuptools.package-data]
+maeppi = ["*.so", "*.dll", "*.dylib", "data/*"]

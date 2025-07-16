@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel", "cffi>=1.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sim2iq"
+authors = [{name = "Your Name", email = "your.email@example.com"}]
+readme = "README.md"
+version = "0.1.0"
+description = "FMAPB2 for protein second virial coefficients"
+keywords = ["protein", "bioinformatics", "virial-coefficients"]
+requires-python = ">=3.7"
+dependencies = [
+    "cffi>=1.0.0",
+]
+
+[project.scripts]
+sim2iq = "sim2iq.tools.sim2iq_calc:main"
+sim2iqpre = "sim2iq.tools.sim2iq_pre:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["sim2iq*"]
+
+[tool.setuptools.package-data]
+sim2iq = ["*.so", "*.dll", "*.dylib", "data/*"]

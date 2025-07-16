@@ -1,0 +1,14 @@
+maeppi_ern.log:Recalculating total energy...
+maeppi_ern.log:Recalculated total energy: 29.625000
+maeppi_sim.log:Initial energy: 62.250000
+maeppi_sim.log:Step   400000: Energy =    28.500000, Accept = 0.906, 
+maeppi_sim.log:Step   800000: Energy =    27.500000, Accept = 0.906, 
+maeppi_sim.log:Step  1200000: Energy =    23.500000, Accept = 0.905, 
+maeppi_sim.log:Step  1600000: Energy =    31.625000, Accept = 0.904, 
+maeppi_sim.log:Step  2000000: Energy =    28.875000, Accept = 0.903, 
+maeppi_sim.log:Step  2400000: Energy =    22.750000, Accept = 0.902, 
+maeppi_sim.log:Step  2800000: Energy =    29.000000, Accept = 0.902, 
+maeppi_sim.log:Step  3200000: Energy =    28.250000, Accept = 0.903, 
+maeppi_sim.log:Step  3600000: Energy =    26.375000, Accept = 0.903, 
+maeppi_sim.log:Step  4000000: Energy =    29.625000, Accept = 0.903, 
+maeppi_sim.log:Final energy: 29.625000
