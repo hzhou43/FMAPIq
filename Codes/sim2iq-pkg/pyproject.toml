@@ -7,7 +7,7 @@ name = "sim2iq"
 authors = "Sanbo Qin"
 readme = "README.md"
 version = "0.1.0"
-description = "I(q) calculated from snapshots in simulations"
+description = "I(q) calculated using snapshots from simulations of protein solutions"
 keywords = ["protein", "SAXS", "weak interactions", "virial coefficients"]
 requires-python = ">=3.7"
 dependencies = [
