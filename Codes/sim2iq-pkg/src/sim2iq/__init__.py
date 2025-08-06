@@ -1,5 +1,5 @@
 """
-sim2iq - Simple SAXS calculator
+sim2iq - SAXS I(q) calculator, using snapshots from simulations of proteon solutions
 """
 
 import os
