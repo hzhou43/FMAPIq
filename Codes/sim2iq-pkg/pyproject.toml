@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sim2iq"
-authors = [{name = "Your Name", email = "your.email@example.com"}]
+authors = "Sanbo Qin"
 readme = "README.md"
 version = "0.1.0"
-description = "FMAPB2 for protein second virial coefficients"
-keywords = ["protein", "bioinformatics", "virial-coefficients"]
+description = "I(q) calculated from snapshots in simulations"
+keywords = ["protein", "SAXS", "weak interactions", "virial coefficients"]
 requires-python = ">=3.7"
 dependencies = [
     "cffi>=1.0.0",
