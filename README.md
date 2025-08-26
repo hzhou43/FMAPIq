@@ -2,7 +2,7 @@
 The goal of the FMAPIq project is to calculate the small-angle X-ray scattering intensity profile, I(q), from protein configurations sampled in atomistic simulations of protein solutions. It has three components.
 
 # FMAPB2
-This code pre-computes interaction energies of a protein of proteins with various relative displacements and relative orientations. The two protein molecules are represented at the all-atom level, but treated as rigid.
+This code pre-computes interaction energies of a protein of proteins with various relative displacements and relative orientations. The two protein molecules are represented at the all-atom level, but treated as rigid. Also, solvent is accounted for implicitly.
 
 # MAEPPIsim
 This code performs Monte Carlo simulations of many-protein systems. The total energy of the system is the sum of contributions from all protein pairs; the contribution from each pair is read back from the pre-computed table by FMAPB2.
