@@ -35,8 +35,9 @@ kbt=$(grep kbt parms.txt | awk '{print $3}')
 
 # Start server
 echo "1. Starting shared memory server..."
-maeppi_shm_server start parms.txt --load-only |tee maeppi_shm_server.log
-keyp=$(grep keyp maeppi_shm_server.log | awk '{print $3}')
+maeppi_shm_server start parms.txt --load-only #|tee maeppi_shm_server.log
+#keyp=$(grep keyp maeppi_shm_server.log | awk '{print $3}')
+keyp=`maeppi_shm_server status parms.txt --key|tail -1`
 
 # Run simulation
 echo "2. Running simulation..."

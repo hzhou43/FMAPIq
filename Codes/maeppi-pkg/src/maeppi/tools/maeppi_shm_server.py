@@ -421,6 +421,7 @@ def run_server(config_file, load_only=False):
             # Load data if files are specified
             if name == "ern" and config.fpat_ern:
                 # Load multiple files for ern data
+                loaded_count = 0
                 for i in range(config.nrot):
                     filename = config.fpat_ern % i
                     if os.path.exists(filename):
@@ -428,7 +429,9 @@ def run_server(config_file, load_only=False):
                         if file_data:
                             offset = i * config.blen**3 * elem_size
                             ffi.memmove(ffi.cast("char*", ptr) + offset, file_data, config.blen**3 * elem_size)
-                            print(f"Loaded {filename}")
+                            loaded_count += 1
+                if loaded_count > 0:
+                    print(f"Loaded {loaded_count} ern files")
             
             elif config.fpat_rot:
                 # Load single files for other data types
@@ -493,10 +496,14 @@ def stop_server(config_file):
     print("Stop signal sent to server")
     return 0
 
-def check_status(config_file):
+def check_status(config_file, key_only=False):
     """Check status of shared memory segments"""
     config = Configuration()
     config.load_from_ini(config_file)
+    
+    if key_only:
+        print(f"0x{config.keyp>>4:x}")
+        return 0
     
     shm_manager = SharedMemoryManager()
     
@@ -564,7 +571,8 @@ def usage(prog):
     print("Commands:")
     print("  start       - Start the server")
     print("    --load-only : Load data and exit (don't keep server running)")
-    print("  status      - Check status of shared memory segments") 
+    print("  status      - Check status of shared memory segments")
+    print("    --key       : Print only the keyp value") 
     print("  stop        - Stop the running server")
     print("  cleanup     - Remove all shared memory segments")
     print()
@@ -576,6 +584,7 @@ def usage(prog):
     print(f"  {prog} start parms.txt            # Persistent server")
     print(f"  {prog} start parms.txt --load-only # Load data from txt and exit")
     print(f"  {prog} status parms.txt           # Check what's running")
+    print(f"  {prog} status parms.txt --key     # Print only keyp")
     print(f"  {prog} stop parms.txt             # Stop persistent server")
     print(f"  {prog} cleanup parms.txt          # Force cleanup segments")
 
@@ -592,7 +601,8 @@ def main():
         load_only = "--load-only" in sys.argv
         return run_server(config_file, load_only)
     elif command == "status":
-        return check_status(config_file)
+        key_only = "--key" in sys.argv
+        return check_status(config_file, key_only)
     elif command == "stop":
         return stop_server(config_file)
     elif command == "cleanup":

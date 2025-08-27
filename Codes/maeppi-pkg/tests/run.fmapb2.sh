@@ -62,6 +62,18 @@ else
     exit 1
 fi
 
+# Test 3:Check B2
+echo "Test 3: Checking B2..."
+fmapb2stat stats
+expected_b2="14.918"
+actual_b2=$(grep "FMAPb22      :" parms.txt|awk '{print $3}')
+if [ "$actual_b2" = "$expected_b2" ]; then
+    echo "PASS: B2 matches expected value"
+else
+    echo "FAIL: B2 mismatch. Expected: $expected_b2, Got: $actual_b2"
+    exit 1
+fi
+
 echo "All tests passed!"
 
 # Clean up on successful completion

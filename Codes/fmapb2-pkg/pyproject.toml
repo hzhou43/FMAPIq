@@ -17,6 +17,7 @@ dependencies = [
 [project.scripts]
 fmapb2 = "fmapb2.tools.fmap:main"
 fmapb2pre = "fmapb2.tools.fmappre:main"
+fmapb2stat = "fmapb2.tools.fmapstat:main"
 
 [tool.setuptools]
 include-package-data = true

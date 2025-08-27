@@ -1,6 +1,4 @@
-include ext/*.c
-include ext/*.h
+include ext/*.[ch]
 include Makefile
-include setup.py
 include README.md
 recursive-include tests *
