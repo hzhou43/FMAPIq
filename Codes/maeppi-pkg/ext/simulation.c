@@ -254,6 +254,7 @@ static void accept_move(Box *box, int particle_id, const Particle *trial, double
 // Perform one Monte Carlo step
 static void monte_carlo_step(Box *box) {
     int particle_id = (int)(ceil(box->random_func(box->rng_state) * box->n_particles))-1;
+    if (particle_id==-1){particle_id=0;}
     
     PARTICLE_TRIAL_MOVE(box->particles[particle_id], box->trial_particle, 
                         box->max_translation_param, box->max_rotation_param,
