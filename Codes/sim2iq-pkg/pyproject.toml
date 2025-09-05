@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sim2iq"
-authors = "Sanbo Qin"
+authors = [{name = "Sanbo Qin", email = "qsb300@gmail.com"}]
 readme = "README.md"
 version = "0.1.0"
 description = "I(q) calculated using snapshots from simulations of protein solutions"
