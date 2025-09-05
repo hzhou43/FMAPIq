@@ -27,4 +27,4 @@ where = ["src"]
 include = ["maeppi*"]
 
 [tool.setuptools.package-data]
-maeppi = ["*.so", "*.dll", "*.dylib", "data/*"]
+maeppi = ["*.so", "*.dll", "*.dylib", "data/**/*"]

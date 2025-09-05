@@ -42,7 +42,7 @@ int PD6DCountAtoms(char *pdbfn, bool txt) {
     
     while (fgets(line, MAXLENLINE, file) != NULL) {
         if (txt) {
-            if (!strncmp(line, "MODEL", 5) || !strncmp(line, "ENDMDL", 6)) {
+            if (!strncmp(line, "MODEL", 5) || !strncmp(line, "ENDMDL", 6) || !strncmp(line, "#", 1)) {
                 continue;
             } else {
                 id = PD6DReadline(line, tr, xr, txt);
@@ -82,7 +82,7 @@ int PD6DReadxyz(FILE *file, int n, double tr[][3], double xr[][3], bool txt) {
     
     while (fgets(line, MAXLENLINE, file) != NULL) {
         if (txt) {
-            if (!strncmp(line, "MODEL", 5) || !strncmp(line, "ENDMDL", 6)) {
+            if (!strncmp(line, "MODEL", 5) || !strncmp(line, "ENDMDL", 6) || !strncmp(line, "#", 1)) {
                 continue;
             } else {
                 id = PD6DReadline(line, tr[i], xr[i], txt);
