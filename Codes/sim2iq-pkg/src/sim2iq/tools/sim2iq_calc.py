@@ -5,24 +5,26 @@ Simple CFFI wrapper for SAXS calculator
 
 import argparse
 import numpy as np
-# Import from the package
+import sys
+
 try:
-    import sim2iq  # Prefer system/installed version
+    import sim2iq
 except ModuleNotFoundError:
-    # Fall back to local version, add the directory containing fmapb2
     import sys
     from pathlib import Path
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-    #print(sys.path)
     import sim2iq
 
-def main():
+def main(argv=None):
     """Simple command line interface"""
+    if argv is None:
+        argv = sys.argv[1:]
+    
     parser = argparse.ArgumentParser(description='Calculate SAXS profile from PQR file')
-    parser.add_argument('input_pqr', help='Input PQR file')  # Changed from 'input.pqr'
+    parser.add_argument('input_pqr', help='Input PQR file')
     parser.add_argument('ngrid', type=int, help='Number of grid points')
     parser.add_argument('box_length', type=float, help='Box length (Å)')
-    parser.add_argument('output_dat', help='Output data file')  # Changed from 'output.dat'
+    parser.add_argument('output_dat', help='Output data file')
     
     parser.add_argument('-b', '--b-factor', type=float, default=0.0, 
                        help='B-factor (default: auto)')
@@ -36,13 +38,13 @@ def main():
                        help='Shell weight (default: 0.011)')
     parser.add_argument('--traj', help='Trajectory file')
     
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     
     # Create calculator and run
     calc = sim2iq.Calc()
     spacing = args.box_length / args.ngrid
     q, intensity = calc(
-        pqr_file=args.input_pqr,  # Fixed: now uses input_pqr
+        pqr_file=args.input_pqr,
         grid_size=args.ngrid,
         grid_spacing=spacing,
         steps=args.steps,

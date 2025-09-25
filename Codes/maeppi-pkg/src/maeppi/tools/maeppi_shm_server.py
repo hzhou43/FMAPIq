@@ -380,8 +380,8 @@ def run_server(config_file, load_only=False):
         print(f"\nReceived signal {signum}, shutting down...")
         shm_manager.killed = True
     
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
+    #signal.signal(signal.SIGINT, signal_handler)
+    #signal.signal(signal.SIGTERM, signal_handler)
     
     try:
         # Create parameter storage segment (10 doubles)
@@ -588,20 +588,23 @@ def usage(prog):
     print(f"  {prog} stop parms.txt             # Stop persistent server")
     print(f"  {prog} cleanup parms.txt          # Force cleanup segments")
 
-def main():
-    if len(sys.argv) < 3:
-        usage(sys.argv[0])
-        sys.exit(1)
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]  # Get command line args, excluding script name
     
-    command = sys.argv[1]
-    config_file = sys.argv[2]
+    if len(argv) < 2:
+        usage("maeppi_shm_server")
+        return 1
+    
+    command = argv[0]
+    config_file = argv[1]
     
     if command == "start":
         # Check for --load-only flag
-        load_only = "--load-only" in sys.argv
+        load_only = "--load-only" in argv
         return run_server(config_file, load_only)
     elif command == "status":
-        key_only = "--key" in sys.argv
+        key_only = "--key" in argv
         return check_status(config_file, key_only)
     elif command == "stop":
         return stop_server(config_file)
@@ -609,7 +612,7 @@ def main():
         return cleanup_segments(config_file)
     else:
         print(f"Unknown command: {command}")
-        usage(sys.argv[0])
+        usage("maeppi_shm_server")
         return 1
 
 if __name__ == "__main__":

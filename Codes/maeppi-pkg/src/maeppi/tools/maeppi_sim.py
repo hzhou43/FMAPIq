@@ -8,16 +8,14 @@ import numpy as np
 import os
 from typing import Optional, Tuple, List
 import time
+import sys
 
-# Import from the package
 try:
     import maeppi
 except ModuleNotFoundError:
-    # Fall back to local version, add the directory containing fmapb2
     import sys
     from pathlib import Path
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-    #print(sys.path)
     import maeppi
 
 
@@ -260,30 +258,31 @@ class MCSimulation:
         print(f"Trajectory successfully saved to {filename}")
         print(f"File contains {len(sel)} frames with {trajectory.shape[1]} particles each")
 
-def main():
+def main(argv=None):
     """Main function matching simulation.c argument structure."""
-    import sys
+    if argv is None:
+        argv = sys.argv[1:]  # Get command line args, excluding script name
     
-    if len(sys.argv) < 10:
-        print(f"Usage: {sys.argv[0]} <n_particles> <box_length> <temperature> <n_steps> <seed> <start.dat> <stop.dat> <sample_freq> <keyp> [tx] [rx] [zx]")
+    if len(argv) < 9:
+        print(f"Usage: maeppi_sim <n_particles> <box_length> <temperature> <n_steps> <seed> <start.dat> <stop.dat> <sample_freq> <keyp> [tx] [rx] [zx]")
         print("  start.dat: '-' for random initialization, or filename to read initial configuration")
         print("  stop.dat:  filename to save final configuration")
         print("  keyp:      shared memory key for FMAP data (hex string, e.g., 'abc123')")
         return 1
     
-    n_particles = int(sys.argv[1])
-    box_length = float(sys.argv[2])
-    temperature = float(sys.argv[3])
-    n_steps = int(sys.argv[4])
-    seed = int(sys.argv[5])
-    start_file = sys.argv[6]
-    stop_file = sys.argv[7]
-    sample_freq = int(sys.argv[8])
-    key_string = sys.argv[9]
+    n_particles = int(argv[0])
+    box_length = float(argv[1])
+    temperature = float(argv[2])
+    n_steps = int(argv[3])
+    seed = int(argv[4])
+    start_file = argv[5]
+    stop_file = argv[6]
+    sample_freq = int(argv[7])
+    key_string = argv[8]
     
-    max_trans_param = float(sys.argv[10]) if len(sys.argv) > 10 else 1.0
-    max_rot_param = float(sys.argv[11]) if len(sys.argv) > 11 else 1.0
-    zratio = float(sys.argv[12]) if len(sys.argv) > 12 else 1.0
+    max_trans_param = float(argv[9]) if len(argv) > 9 else 1.0
+    max_rot_param = float(argv[10]) if len(argv) > 10 else 1.0
+    zratio = float(argv[11]) if len(argv) > 11 else 1.0
     
     print("Starting NVT Monte Carlo simulation")
     print(f"Parameters: {n_particles} particles, box={box_length}, T={temperature}")
@@ -334,7 +333,7 @@ def main():
         steps_per_sec = (step + steps_to_run) / elapsed if elapsed > 0 else 0
         
         print(f"Step {step + steps_to_run:8d}: Energy = {stats['total_energy']:12.6f}, "
-              f"Accept = {stats['acceptance_rate']:.3f}, Speed = {steps_per_sec:.0f} steps/s")
+              f"Accept = {stats['acceptance_rate']:.3f}, Speed = {steps_per_sec:.0f} steps/s",flush=True)
     
     # Print final statistics
     final_stats = sim.get_stats()

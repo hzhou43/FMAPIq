@@ -55,7 +55,7 @@ def get_kbt(temp):
 # https://nvlpubs.nist.gov/nistpubs/jres/56/jresv56n1p1_a1b.pdf
 def get_water_die(temp):
     """Calculate water dielectric constant,
-    Malmberg, Cyrus G. and Arthur A. Maryott. “Dielectric constant of water from 0 to 100 C.” Journal of research of the National Bureau of Standards 56 (1956): 1.
+    Malmberg, Cyrus G. and Arthur A. Maryott. "Dielectric constant of water from 0 to 100 C." Journal of research of the National Bureau of Standards 56 (1956): 1.
     """
     c2k = 273.15
     t = temp - c2k
@@ -172,22 +172,41 @@ def vdw_assign_center(pdb_fname, vdw_fname):
                           (sig/2.0, key, sig, eps, sqA, sqB))
 
 
-def main():
-    if len(sys.argv) < 6:
-        print("Usage: %s A.pqr ion temp escl vscl [B.pqr] >parms.txt" % sys.argv[0])
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]  # Get command line args, excluding script name
+    
+    # Parse arguments to look for -o option
+    output_file = None
+    filtered_args = []
+    
+    i = 0
+    while i < len(argv):
+        if argv[i] == '-o' and i + 1 < len(argv):
+            output_file = argv[i + 1]
+            i += 2  # Skip both -o and filename
+        else:
+            filtered_args.append(argv[i])
+            i += 1
+    
+    argv = filtered_args  # Use filtered arguments for the rest of the function
+    
+    if len(argv) < 5:
+        print("Usage: %s [-o output_file] A.pqr ion temp escl vscl [B.pqr]" % (sys.argv[0] if argv is None else "fmappre"))
         print("Extra output: subA.vdw [subB.vdw]")
         print("vscl: use '-' to auto-calculate from mass")
+        print("  -o output_file  : write parameters to file instead of stdout")
         sys.exit(1)
     
-    pqr_a = sys.argv[1]
-    ion = float(sys.argv[2])
-    temp_c = float(sys.argv[3])
-    escl = 1.0 if (sys.argv[4] == "-") else float(sys.argv[4])
-    vscl_input = sys.argv[5]
+    pqr_a = argv[0]
+    ion = float(argv[1])
+    temp_c = float(argv[2])
+    escl = 1.0 if (argv[3] == "-") else float(argv[3])
+    vscl_input = argv[4]
     
     # Check if we have molecule B
-    has_mol_b = len(sys.argv) > 6
-    pqr_b = sys.argv[6] if has_mol_b else None
+    has_mol_b = len(argv) > 5
+    pqr_b = argv[5] if has_mol_b else None
     
     # Convert temperature to Kelvin
     temp_k = temp_c + 273.15
@@ -216,61 +235,70 @@ def main():
     kbt = get_kbt(temp_k)
     qscl = 1.0 + 0.025 * pow(ion, -0.4)
     
-    # Output parameters
-    print("%-12s : %16.8E K" % ("Temperature", temp_k))
-    print("%-12s : %16.8E" % ("kbt", kbt))
-    print("%-12s : %16.8E M" % ("ion", ion))
-    print("%-12s : %16.8E" % ("qscl", qscl))
-    print("%-12s : %16.8E" % ("sdie", sdie))
-    print("%-12s : %16.8E" % ("kappa", kappa))
-    print("%-12s : %16.8E angstrom" % ("lambda", 1.0/kappa))
-    print("%-12s : %16.3f" % ("rscl", 1.08))
-    print("%-12s : %16.3f" % ("escl", escl))
-    print("%-12s : %16.3f" % ("vscl", vscl))
+    # Determine output destination
+    output_stream = open(output_file, 'w') if output_file else sys.stdout
     
-    print("%-12s : %16.0f" % ("ChargeA", charge_a))
-    print("%-12s : %16.3f Da" % ("MassA", mass_a))
-    
-    # Create VDW file for molecule A (centered internally)
-    vdw_assign_center(pqr_a, "subA.vdw")
-    max_rad_a = get_maxrad("subA.vdw")
-    print("%-12s : %16.3f angstrom" % ("MaxRA", max_rad_a))
-    
-    # Process molecule B if present
-    if has_mol_b:
-        print("%-12s : %16.0f" % ("ChargeB", charge_b))
-        print("%-12s : %16.3f Da" % ("MassB", mass_b))
+    try:
+        # Output parameters
+        output_stream.write("%-12s : %16.8E K\n" % ("Temperature", temp_k))
+        output_stream.write("%-12s : %16.8E\n" % ("kbt", kbt))
+        output_stream.write("%-12s : %16.8E M\n" % ("ion", ion))
+        output_stream.write("%-12s : %16.8E\n" % ("qscl", qscl))
+        output_stream.write("%-12s : %16.8E\n" % ("sdie", sdie))
+        output_stream.write("%-12s : %16.8E\n" % ("kappa", kappa))
+        output_stream.write("%-12s : %16.8E angstrom\n" % ("lambda", 1.0/kappa))
+        output_stream.write("%-12s : %16.3f\n" % ("rscl", 1.08))
+        output_stream.write("%-12s : %16.3f\n" % ("escl", escl))
+        output_stream.write("%-12s : %16.3f\n" % ("vscl", vscl))
         
-        # Create VDW file for molecule B (centered internally)
-        vdw_assign_center(pqr_b, "subB.vdw")
-        max_rad_b = get_maxrad("subB.vdw")
-        print("%-12s : %16.3f angstrom" % ("MaxRB", max_rad_b))
+        output_stream.write("%-12s : %16.0f\n" % ("ChargeA", charge_a))
+        output_stream.write("%-12s : %16.3f Da\n" % ("MassA", mass_a))
         
-        # Calculate combined parameters
-        max_r = (max_rad_a + max_rad_b) / 2.0
+        # Create VDW file for molecule A (centered internally)
+        vdw_assign_center(pqr_a, "subA.vdw")
+        max_rad_a = get_maxrad("subA.vdw")
+        output_stream.write("%-12s : %16.3f angstrom\n" % ("MaxRA", max_rad_a))
         
-        # Get maximum atom radius from both files
-        atom_rad_a = get_max_atom_radius("subA.vdw")
-        atom_rad_b = get_max_atom_radius("subB.vdw")
-        atom_r = max(atom_rad_a, atom_rad_b)
-    else:
-        max_r = max_rad_a
-        atom_r = get_max_atom_radius("subA.vdw")
-    
-    print("%-12s : %16.3f Da" % ("mass", mass))
-    print("%-12s : %16.3f angstrom" % ("MaxR", max_r))
-    
-    # Calculate rcut
-    rcut = int(1.0/kappa * 3.0)
-    if rcut < 36:
-        rcut = 36
-    print("%-12s : %16.3f angstrom" % ("rcut", rcut))
-    
-    # Calculate blen
-    spacing = 0.6
-    blen = 2 * (int((2 * (max_r + atom_r) + rcut) / spacing) + 1)
-    print("%-12s : %16.1f" % ("spacing", spacing))
-    print("%-12s : %16.0f" % ("blen", blen))
+        # Process molecule B if present
+        if has_mol_b:
+            output_stream.write("%-12s : %16.0f\n" % ("ChargeB", charge_b))
+            output_stream.write("%-12s : %16.3f Da\n" % ("MassB", mass_b))
+            
+            # Create VDW file for molecule B (centered internally)
+            vdw_assign_center(pqr_b, "subB.vdw")
+            max_rad_b = get_maxrad("subB.vdw")
+            output_stream.write("%-12s : %16.3f angstrom\n" % ("MaxRB", max_rad_b))
+            
+            # Calculate combined parameters
+            max_r = (max_rad_a + max_rad_b) / 2.0
+            
+            # Get maximum atom radius from both files
+            atom_rad_a = get_max_atom_radius("subA.vdw")
+            atom_rad_b = get_max_atom_radius("subB.vdw")
+            atom_r = max(atom_rad_a, atom_rad_b)
+        else:
+            max_r = max_rad_a
+            atom_r = get_max_atom_radius("subA.vdw")
+        
+        output_stream.write("%-12s : %16.3f Da\n" % ("mass", mass))
+        output_stream.write("%-12s : %16.3f angstrom\n" % ("MaxR", max_r))
+        
+        # Calculate rcut
+        rcut = int(1.0/kappa * 3.0)
+        if rcut < 36:
+            rcut = 36
+        output_stream.write("%-12s : %16.3f angstrom\n" % ("rcut", rcut))
+        
+        # Calculate blen
+        spacing = 0.6
+        blen = 2 * (int((2 * (max_r + atom_r) + rcut) / spacing) + 1)
+        output_stream.write("%-12s : %16.1f\n" % ("spacing", spacing))
+        output_stream.write("%-12s : %16.0f\n" % ("blen", blen))
+        
+    finally:
+        # Close the file if we opened one
+        if output_file:
+            output_stream.close()
 
 if __name__ == "__main__":
     main()

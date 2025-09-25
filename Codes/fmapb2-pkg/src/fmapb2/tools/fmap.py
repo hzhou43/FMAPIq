@@ -10,15 +10,12 @@ import math
 import traceback
 from copy import deepcopy
 
-# Import from the package
 try:
-    from fmapb2 import ffi, lib  # Prefer system/installed version
+    from fmapb2 import ffi, lib
 except ModuleNotFoundError:
-    # Fall back to local version, add the directory containing fmapb2
     import sys
     from pathlib import Path
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-    #print(sys.path)
     from fmapb2 import ffi, lib
 
 class Atom:
@@ -201,17 +198,20 @@ def save_grid_data(filename, softfb_array, l):
     with open(filename, 'wb') as f:
         f.write(compressed_data)
 
-def main():
-    if len(sys.argv) < 4:
-        print("Usage: python %s subA.vdw parms.txt ang.dat [fnamepat] [subB.vdw]" % sys.argv[0],file=sys.stderr)
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]  # Get command line args, excluding script name
+    
+    if len(argv) < 3:
+        print("Usage: python %s subA.vdw parms.txt ang.dat [fnamepat] [subB.vdw]" % (sys.argv[0] if argv is None else "fmapb2"), file=sys.stderr)
         sys.exit(1)
     
     # Parse command line arguments
-    subA_file = sys.argv[1]
-    parms_file = sys.argv[2]
-    ang_file = sys.argv[3]
-    fnamepat = "ve/tErn.{:05d}.mat.gz" if len(sys.argv) < 5  else sys.argv[4] 
-    subB_file = sys.argv[5] if len(sys.argv) > 5 else None
+    subA_file = argv[0]
+    parms_file = argv[1]
+    ang_file = argv[2]
+    fnamepat = "ve/tErn.{:05d}.mat.gz" if len(argv) < 4 else argv[3] 
+    subB_file = argv[4] if len(argv) > 4 else None
     
     # Validate format pattern
     try:

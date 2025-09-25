@@ -114,11 +114,23 @@ void setdtErn(int l, tErn softfb[l][l][l], bool vol[l][l][l], fftw_real soft[l][
 }
 
 void softgrd(int nCrd, ATOM Crds[], int nPro, ATOM Pros[], int l, double dx, SOLV* sol, tErn softfb[l][l][l]){
-    bool vol[l][l][l];
-    fftw_real working[l][l][2*(l/2+1)];
-    fftw_real lcEle[l][l][2*(l/2+1)];
-    fftw_real lcVdw[l][l][2*(l/2+1)];
-    fftw_real combined[l][l][2*(l/2+1)];
+    bool (*vol)[l][l] = malloc(l * l * l * sizeof(bool));
+    fftw_real (*working)[l][2*(l/2+1)] = malloc(l * l * 2*(l/2+1) * sizeof(fftw_real));
+    fftw_real (*lcEle)[l][2*(l/2+1)] = malloc(l * l * 2*(l/2+1) * sizeof(fftw_real));
+    fftw_real (*lcVdw)[l][2*(l/2+1)] = malloc(l * l * 2*(l/2+1) * sizeof(fftw_real));
+    fftw_real (*combined)[l][2*(l/2+1)] = malloc(l * l * 2*(l/2+1) * sizeof(fftw_real));
+    
+    // Check allocation success
+    if (!vol || !working || !lcEle || !lcVdw || !combined) {
+        fprintf(stderr, "Error: Failed to allocate memory in softgrd\n");
+        // Clean up any successful allocations
+        if (vol) free(vol);
+        if (working) free(working);
+        if (lcEle) free(lcEle);
+        if (lcVdw) free(lcVdw);
+        if (combined) free(combined);
+        return;
+    }
     
     static int init_lattice=0;
     if (init_lattice==0) init_lattice_data();
@@ -156,6 +168,13 @@ void softgrd(int nCrd, ATOM Crds[], int nPro, ATOM Pros[], int l, double dx, SOL
     
     // Set energy array data into softfb
     setdtErn(l,softfb,vol,combined); 
+    
+    // Clean up heap allocations
+    free(vol);
+    free(working);
+    free(lcEle);
+    free(lcVdw);
+    free(combined);
 }
 
 void softgrd_cleanup(void) {

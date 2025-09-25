@@ -1,0 +1,30 @@
+[project]
+name = "fmapiq"
+version = "0.1.0"
+description = "Small Angle Scattering Pipeline for Protein Solutions"
+requires-python = ">=3.8"
+dependencies = [
+    "fmapb2",
+    "maeppi", 
+    "sim2iq",
+    "numpy",
+    "matplotlib",  # For plotting
+    "gradio==3.50.2",  # For GUI
+]
+
+[project.scripts]
+fmapiq = "main:main"
+
+[project.optional-dependencies]
+gui = ["gradio", "matplotlib"]
+build = ["pyinstaller"]
+
+[tool.uv.sources]
+sim2iq = { path = "../sim2iq-pkg" }
+fmapb2 = { path = "../fmapb2-pkg" }
+maeppi = { path = "../maeppi-pkg" }
+
+[dependency-groups]
+dev = [
+    "pyinstaller",
+]

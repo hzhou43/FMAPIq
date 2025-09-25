@@ -11,6 +11,14 @@ import numpy as np
 import json
 import argparse
 
+try:
+    import sim2iq
+except ModuleNotFoundError:
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+    import sim2iq
+
 # van der Waals radii (in Å)
 vdW = {
     'H': 1.2, 'HE': 1.4, 'LI': 1.82, 'BE': 1.53, 'B': 1.92, 'C': 1.7, 'N': 1.55, 'O': 1.52, 'F': 1.47, 'NE': 1.54,
@@ -175,13 +183,16 @@ def write_pqr(pdb, output_filename):
         f.write("END\n")
 
 
-def main():
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]  # Get command line args, excluding script name
+    
     parser = argparse.ArgumentParser(description="Use precomputed unique atomic volumes and output as PQR")
     parser.add_argument("-f", "--file", type=str, required=True, help="Input PDB file")
     parser.add_argument("-v", "--volumes", type=str, help="JSON file containing precomputed volumes (default: ../data/mean_volumes.json)")
     parser.add_argument("-o", "--output", type=str, help="Output PQR filename (default: input_uniqueradii.pqr)")
     
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     
     if not os.path.exists(args.file):
         print(f"Error: Input file {args.file} not found")
@@ -191,10 +202,9 @@ def main():
     if args.volumes:
         volumes_file = args.volumes
     else:
-        # Look for mean_volumes.json in ../data/ relative to script location
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        volumes_file = os.path.join(script_dir, "..", "data", "mean_volumes.json")
-    
+        sim2iq_path = sim2iq.__path__[0]
+        volumes_file = os.path.join(sim2iq_path, "data/mean_volumes.json")
+
     if not os.path.exists(volumes_file):
         print(f"Error: Volume file {volumes_file} not found")
         return 1

@@ -360,20 +360,23 @@ def run_stats():
     
     #print("Stats processing complete!")
 
-def main():
-    if len(sys.argv) > 1 and sys.argv[1] == "stats":
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]
+    
+    if len(argv) > 0 and argv[0] == "stats":
         run_stats()
-    elif len(sys.argv) >= 3:
-        fname=sys.argv[1]
-        pos=int(sys.argv[2])
-        dat=getdata(fname,pos)
-        npdat=np.array(dat)
-        std=fp_stderr(npdat)
-        print(npdat.size,np.mean(npdat),np.std(npdat),std)
+    elif len(argv) >= 2:
+        fname = argv[0]
+        pos = int(argv[1])
+        dat = getdata(fname, pos)
+        npdat = np.array(dat)
+        std = fp_stderr(npdat)
+        print(npdat.size, np.mean(npdat), np.std(npdat), std)
     else:
         print("Usage:")
         print("  python script.py <filename> <column>  # Original FP functionality")
         print("  python script.py stats                # Run stats.sh functionality")
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
