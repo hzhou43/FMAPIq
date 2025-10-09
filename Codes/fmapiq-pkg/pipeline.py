@@ -348,6 +348,7 @@ class Pipeline:
         self.update_config(spacing=spacing)
         
         try:
+            n_proteins = int(self.config_data["n_proteins"])
             n_grid_points = int(box_size / spacing)
             original_dir = os.getcwd()
             os.chdir(self.work_dir)
