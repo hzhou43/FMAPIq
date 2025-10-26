@@ -14,30 +14,33 @@ import sys
 
 def main():
     """Main entry point that decides between GUI and CLI modes"""
-    
+
     # Check for explicit mode flags
     force_gui = '--gui' in sys.argv
     force_cli = '--cli' in sys.argv
-    
+    share = any(arg.startswith('--share') for arg in sys.argv)
+
     # Remove mode flags from arguments
     if force_gui:
         sys.argv.remove('--gui')
     if force_cli:
         sys.argv.remove('--cli')
-    
+    if share:
+        sys.argv = [arg for arg in sys.argv if not arg.startswith('--share')]
+
     # Determine execution mode
     if force_gui or (len(sys.argv) == 1 and not force_cli):
-        launch_gui()
+        launch_gui(share)
     else:
         launch_cli()
 
-def launch_gui():
+def launch_gui(share=False):
     """Launch the GUI interface"""
     try:
         import gradio
         from gui import main as gui_main
         print("Launching GUI interface...")
-        gui_main()
+        gui_main(share=share)
     except ImportError:
         print("GUI not available. Install gradio: pip install gradio")
         print("Falling back to CLI mode...")
