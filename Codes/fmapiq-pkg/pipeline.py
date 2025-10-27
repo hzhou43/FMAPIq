@@ -547,9 +547,6 @@ def main():
                               type=type(default), default=default,
                               help=f'{key} (default: {default})')
 
-    # Add nrot parameter
-    parser.add_argument('--nrot', type=int, default=72, help='Number of rotations (default: 72)')
-
     args = parser.parse_args()
 
     # Initialize pipeline
