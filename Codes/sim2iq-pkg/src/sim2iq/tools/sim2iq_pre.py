@@ -53,8 +53,8 @@ class PDB(object):
                 # Keep first 54 characters as input for PQR output
                 self.pdb_lines.append(line[:54])
                 
-                # Extract only info needed for radius assignment
-                atomname = line[12:16].strip()
+                # Extract only info needed for radius assignment, shorter HG21 like
+                atomname = line[12:16].strip()[:3]
                 resname = line[17:20]
                 
                 self.atomname.append(atomname)

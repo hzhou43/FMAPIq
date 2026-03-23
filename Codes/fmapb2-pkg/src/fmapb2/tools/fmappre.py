@@ -147,12 +147,12 @@ def vdw_assign_center(pdb_fname, vdw_fname):
     # Write VDW file with centered coordinates
     with open(vdw_fname, 'w') as vdw_file:
         for line in lines:
-            # Fix H* and determine atom type
+            # Get H* and determine atom type, but keep info same
+            info=line[:30]
             if line[12] == "H":
-                info=line[:13]+'H'+line[14:30]
+                key="H"
             else:
-                info=line[:30]
-            key = info[13]
+                key = info[13]
             
             # Get VDW parameters
             sig, eps = VDW_DATA[key]
